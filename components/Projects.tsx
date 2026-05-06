@@ -1,10 +1,9 @@
 'use client'
-
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import Image from 'next/image'
 
-const codeSnippet = `<span class="token-comment"># Anti-replay HMAC middleware</span>
+const code = `<span class="token-comment"># Anti-replay HMAC middleware</span>
 <span class="token-keyword">import</span> hmac, hashlib, time
 <span class="token-keyword">from</span> fastapi <span class="token-keyword">import</span> HTTPException, Request
 <span class="token-keyword">from</span> functools <span class="token-keyword">import</span> wraps
@@ -14,21 +13,21 @@ _used_nonces: set = set()
 <span class="token-keyword">def</span> <span class="token-function">verify_request</span>(secret: str):
     <span class="token-keyword">def</span> <span class="token-function">decorator</span>(func):
         <span class="token-decorator">@wraps(func)</span>
-        <span class="token-keyword">async def</span> <span class="token-function">wrapper</span>(req: Request, *args, **kwargs):
+        <span class="token-keyword">async def</span> <span class="token-function">wrapper</span>(req: Request, **kwargs):
             token = req.headers.get(<span class="token-string">"X-Auth-Token"</span>)
             nonce = req.headers.get(<span class="token-string">"X-Nonce"</span>)
             ts    = float(req.headers.get(<span class="token-string">"X-Timestamp"</span>, <span class="token-number">0</span>))
 
-            <span class="token-comment"># 1. Timestamp window ±30s</span>
+            <span class="token-comment"># 1. ±30s timestamp window</span>
             <span class="token-keyword">if</span> abs(time.time() - ts) > <span class="token-number">30</span>:
                 <span class="token-keyword">raise</span> HTTPException(<span class="token-number">401</span>, <span class="token-string">"Request expired"</span>)
 
-            <span class="token-comment"># 2. One-time nonce → no replay</span>
+            <span class="token-comment"># 2. One-time nonce → prevent replay</span>
             <span class="token-keyword">if</span> nonce <span class="token-keyword">in</span> _used_nonces:
                 <span class="token-keyword">raise</span> HTTPException(<span class="token-number">401</span>, <span class="token-string">"Replay detected"</span>)
             _used_nonces.add(nonce)
 
-            <span class="token-comment"># 3. HMAC signature verify</span>
+            <span class="token-comment"># 3. HMAC-SHA256 verify</span>
             expected = hmac.new(
                 secret.encode(),
                 f<span class="token-string">"{nonce}:{ts}"</span>.encode(),
@@ -37,86 +36,91 @@ _used_nonces: set = set()
             <span class="token-keyword">if not</span> hmac.compare_digest(token, expected):
                 <span class="token-keyword">raise</span> HTTPException(<span class="token-number">403</span>, <span class="token-string">"Invalid signature"</span>)
 
-            <span class="token-keyword">return await</span> func(req, *args, **kwargs)
+            <span class="token-keyword">return await</span> func(req, **kwargs)
         <span class="token-keyword">return</span> wrapper
     <span class="token-keyword">return</span> decorator`
 
+const wfSteps = [
+  { icon:'📥', label:'Input Source',   desc:'Video URL or file upload via bot command',         color:'#3B82F6', time:'<1s'  },
+  { icon:'🔍', label:'Media Analysis', desc:'FFprobe extracts codec, duration & streams',       color:'#7C3AED', time:'~2s'  },
+  { icon:'🔤', label:'Subtitle Parse', desc:'SRT/ASS tokenizer + HTML entity cleanup',          color:'#059669', time:'~3s'  },
+  { icon:'🤖', label:'AI Translate',   desc:'Batched GPT calls with subtitle context window',   color:'#EA580C', time:'~8s'  },
+  { icon:'🎬', label:'Mux & Encode',   desc:'FFmpeg burns subtitles & re-encodes output',       color:'#DC2626', time:'~4m'  },
+  { icon:'📤', label:'Delivery',       desc:'Bot sends compressed file via Telegram API',       color:'#0891B2', time:'<30s' },
+]
+
 function Project1() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-
+  const inView = useInView(ref, { once:true, margin:'-60px' })
   return (
     <motion.div ref={ref}
-      initial={{ opacity:0, y:50 }} animate={inView?{opacity:1,y:0}:{}}
-      transition={{ duration:0.9, ease:[0.23,1,0.32,1] }}
-      className="project-card rounded-3xl p-8 md:p-12 mb-10">
+      initial={{ opacity:0, y:32 }} animate={inView?{ opacity:1, y:0 }:{}}
+      transition={{ duration:0.75, ease:[0.23,1,0.32,1] }}
+      className="bg-white rounded-2xl border border-surface-border shadow-card overflow-hidden mb-8"
+    >
+      {/* Card header bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-brand-500 to-violet-500"/>
 
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-10">
-        <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="font-mono text-xs text-cyan-glow/60 tracking-widest">CASE STUDY — 01</span>
-            <span className="w-12 h-px bg-cyan-glow/30"/>
+      <div className="p-6 sm:p-10">
+        {/* Meta */}
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="label">Case Study 01</span>
+              <span className="w-8 h-px bg-brand-200"/>
+            </div>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink">
+              Telegram Mini-App &{' '}
+              <span className="gradient-text">Anti-Cheat Bot</span>
+            </h3>
           </div>
-          <h3 className="font-display text-[clamp(1.8rem,4vw,3rem)] text-ice leading-tight">
-            TELEGRAM MINI-APP<br/><span className="text-cyan-glow">& ANTI-CHEAT BOT</span>
-          </h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {['Python','FastAPI','Telegram Bot API','JWT','PostgreSQL'].map(t => (
-            <span key={t} className="font-mono text-xs px-3 py-1 rounded-full border border-cyan-glow/20 text-ice-dim">{t}</span>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 items-start">
-        {/* Left: phone mockup + problem/solution */}
-        <div className="space-y-8">
-          {/* Phone mockup with real image */}
-          <div className="flex justify-center">
-            <div className="phone-mockup w-52 overflow-hidden relative rounded-[2rem]">
-              <Image
-                src="/app-mockup.png"
-                alt="Telegram Anti-Cheat Bot App UI"
-                width={480} height={960}
-                className="w-full h-auto"
-              />
-              {/* Notch overlay */}
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-4 bg-void rounded-full" />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="border border-red-500/20 rounded-xl p-5 bg-red-950/10">
-              <p className="font-mono text-xs text-red-400/70 tracking-widest mb-2">THE PROBLEM</p>
-              <p className="font-body text-ice-dim text-sm leading-relaxed">
-                A Telegram gaming community needed a Mini-App with real-time scoring — but players
-                were exploiting API endpoints to manipulate scores with forged timestamps and replay attacks.
-              </p>
-            </div>
-            <div className="border border-emerald-500/20 rounded-xl p-5 bg-emerald-950/10">
-              <p className="font-mono text-xs text-emerald-400/70 tracking-widest mb-2">THE SOLUTION</p>
-              <p className="font-body text-ice-dim text-sm leading-relaxed">
-                Layered anti-cheat: HMAC-signed API calls with one-time nonces, behavioral velocity
-                analysis detecting inhuman click patterns, and a shadow-ban queue silently isolating cheaters.
-              </p>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            {['Python','FastAPI','Telegram API','JWT','PostgreSQL'].map(t => (
+              <span key={t} className="pill pill-brand">{t}</span>
+            ))}
           </div>
         </div>
 
-        {/* Code block */}
-        <div>
-          <div className="code-block">
-            <div className="code-header">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/60"/>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/60"/>
-                <div className="w-3 h-3 rounded-full bg-emerald-500/60"/>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+          {/* Left */}
+          <div className="space-y-6">
+            {/* Phone mockup */}
+            <div className="flex justify-center">
+              <div className="relative w-48 rounded-[2rem] overflow-hidden border-2 border-surface-border shadow-card-hover">
+                <Image src="/app-mockup.png" alt="Telegram Anti-Cheat Bot UI" width={480} height={960} className="w-full h-auto"/>
+                <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-14 h-3 bg-surface-muted rounded-full"/>
               </div>
-              <span className="font-mono text-xs text-ice-dim/50 ml-2">secure_api.py</span>
             </div>
-            <pre dangerouslySetInnerHTML={{ __html: codeSnippet }}/>
+
+            {/* Problem / Solution */}
+            <div className="space-y-3">
+              <div className="rounded-xl p-4 bg-red-50 border border-red-100">
+                <p className="font-mono text-xs font-bold text-red-500 tracking-widest mb-2 uppercase">The Problem</p>
+                <p className="text-sm text-ink-muted leading-relaxed">Players were exploiting API endpoints to forge scores — hundreds of requests per second with faked timestamps and replay attacks flooding the leaderboard.</p>
+              </div>
+              <div className="rounded-xl p-4 bg-emerald-50 border border-emerald-100">
+                <p className="font-mono text-xs font-bold text-emerald-600 tracking-widest mb-2 uppercase">The Solution</p>
+                <p className="text-sm text-ink-muted leading-relaxed">Layered anti-cheat: HMAC-signed requests with one-time nonces, behavioral velocity analysis detecting inhuman patterns, and a silent shadow-ban queue.</p>
+              </div>
+            </div>
           </div>
-          <p className="font-mono text-xs text-ice-dim/30 mt-3 text-right">↑ HMAC + nonce anti-replay middleware</p>
+
+          {/* Code block */}
+          <div>
+            <div className="code-block">
+              <div className="code-header">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-400"/>
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"/>
+                  <div className="w-3 h-3 rounded-full bg-green-400"/>
+                </div>
+                <span className="font-mono text-xs text-gray-500 ml-2">secure_api.py</span>
+                <span className="ml-auto font-mono text-xs text-gray-600 bg-gray-800 px-2 py-0.5 rounded">Python 3.12</span>
+              </div>
+              <pre dangerouslySetInnerHTML={{ __html: code }}/>
+            </div>
+            <p className="text-xs text-ink-faint font-mono mt-2 text-right">↑ HMAC + nonce anti-replay middleware</p>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -125,56 +129,76 @@ function Project1() {
 
 function Project2() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-
+  const inView = useInView(ref, { once:true, margin:'-60px' })
   return (
     <motion.div ref={ref}
-      initial={{ opacity:0, y:50 }} animate={inView?{opacity:1,y:0}:{}}
-      transition={{ duration:0.9, ease:[0.23,1,0.32,1] }}
-      className="project-card rounded-3xl p-8 md:p-12">
+      initial={{ opacity:0, y:32 }} animate={inView?{ opacity:1, y:0 }:{}}
+      transition={{ duration:0.75, ease:[0.23,1,0.32,1] }}
+      className="bg-white rounded-2xl border border-surface-border shadow-card overflow-hidden"
+    >
+      <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-red-500"/>
 
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-10">
-        <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="font-mono text-xs text-orange-hot/60 tracking-widest">CASE STUDY — 02</span>
-            <span className="w-12 h-px bg-orange-hot/30"/>
+      <div className="p-6 sm:p-10">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="label" style={{ color:'#EA580C' }}>Case Study 02</span>
+              <span className="w-8 h-px bg-orange-200"/>
+            </div>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink">
+              Media Processing{' '}
+              <span style={{ background:'linear-gradient(135deg,#EA580C,#DC2626)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                Automation Pipeline
+              </span>
+            </h3>
           </div>
-          <h3 className="font-display text-[clamp(1.8rem,4vw,3rem)] text-ice leading-tight">
-            MEDIA PROCESSING<br/><span className="text-orange-hot text-glow-orange">AUTOMATION PIPELINE</span>
-          </h3>
+          <div className="flex flex-wrap gap-2">
+            {['Python','FFmpeg','Aiogram','OpenAI API','Redis'].map(t => (
+              <span key={t} className="pill" style={{ borderColor:'#FED7AA', background:'#FFF7ED', color:'#EA580C' }}>{t}</span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {['Python','FFmpeg','Aiogram','OpenAI API','Redis'].map(t => (
-            <span key={t} className="font-mono text-xs px-3 py-1 rounded-full border border-orange-hot/20 text-ice-dim">{t}</span>
-          ))}
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <div className="border border-red-500/20 rounded-xl p-5 bg-red-950/10">
-          <p className="font-mono text-xs text-red-400/70 tracking-widest mb-2">THE PROBLEM</p>
-          <p className="font-body text-ice-dim text-sm leading-relaxed">
-            Content creators processing dozens of videos daily — extracting subtitles, translating
-            to multiple languages, re-encoding. Manual workflow: 4–6 hours per video.
-          </p>
+        {/* Problem / Solution */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          <div className="rounded-xl p-4 bg-red-50 border border-red-100">
+            <p className="font-mono text-xs font-bold text-red-500 tracking-widest mb-2 uppercase">The Problem</p>
+            <p className="text-sm text-ink-muted leading-relaxed">Content creators processing dozens of videos daily — manual subtitle extraction, translation and re-encoding was taking 4–6 hours per video.</p>
+          </div>
+          <div className="rounded-xl p-4 bg-emerald-50 border border-emerald-100">
+            <p className="font-mono text-xs font-bold text-emerald-600 tracking-widest mb-2 uppercase">The Solution</p>
+            <p className="text-sm text-ink-muted leading-relaxed">A Telegram bot media studio. Send a video link, receive a fully processed file. Redis queue handles concurrent jobs — per-video time down to under 8 minutes.</p>
+          </div>
         </div>
-        <div className="border border-emerald-500/20 rounded-xl p-5 bg-emerald-950/10">
-          <p className="font-mono text-xs text-emerald-400/70 tracking-widest mb-2">THE SOLUTION</p>
-          <p className="font-body text-ice-dim text-sm leading-relaxed">
-            A Telegram bot media studio. Send a video link, receive a processed file. Redis job
-            queue for concurrent processing — per-video time down to under 8 minutes.
-          </p>
-        </div>
-      </div>
 
-      {/* Workflow image */}
-      <div className="rounded-2xl overflow-hidden border border-orange-hot/15 shadow-[0_0_40px_rgba(255,107,53,0.06)]">
-        <Image
-          src="/workflow.png"
-          alt="Media Processing Automation Workflow Pipeline"
-          width={1200} height={400}
-          className="w-full h-auto"
-        />
+        {/* Workflow image */}
+        <div className="rounded-xl overflow-hidden border border-surface-border shadow-card mb-8">
+          <Image src="/workflow.png" alt="Media Processing Pipeline" width={1200} height={400} className="w-full h-auto"/>
+        </div>
+
+        {/* Workflow node steps */}
+        <div>
+          <p className="text-xs text-ink-faint font-mono tracking-widest uppercase mb-4">Step-by-step breakdown</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {wfSteps.map((s, i) => (
+              <motion.div key={s.label}
+                initial={{ opacity:0, y:16 }}
+                whileInView={{ opacity:1, y:0 }}
+                viewport={{ once:true }}
+                transition={{ delay:i*0.08, duration:0.5 }}
+                className="wf-node"
+              >
+                <div className="text-2xl mb-2">{s.icon}</div>
+                <p className="text-xs font-bold text-ink mb-1" style={{ color:s.color }}>{s.label}</p>
+                <p className="text-[10px] text-ink-subtle leading-relaxed mb-2">{s.desc}</p>
+                <span className="inline-block font-mono text-[10px] px-2 py-0.5 rounded-full border font-bold"
+                  style={{ borderColor:s.color+'40', color:s.color, background:s.color+'10' }}>
+                  {s.time}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </motion.div>
   )
@@ -182,24 +206,25 @@ function Project2() {
 
 export default function Projects() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-100px' })
+  const inView = useInView(ref, { once:true, margin:'-80px' })
 
   return (
-    <section id="projects" ref={ref} className="relative py-32 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_30%_50%,rgba(255,107,53,0.03),transparent)] pointer-events-none"/>
-
-      <div className="max-w-7xl mx-auto px-6">
-        <motion.div initial={{ opacity:0, y:30 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.7 }} className="mb-16">
-          <p className="section-label mb-4">// 03. CASE STUDIES</p>
-          <div className="accent-line mb-8"/>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,4.5rem)] text-ice leading-tight">
-            REAL PROBLEMS.<br/><span className="text-cyan-glow text-glow">ENGINEERED SOLUTIONS.</span>
+    <section id="projects" ref={ref} className="py-24 sm:py-32 bg-white">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8">
+        <motion.div
+          initial={{ opacity:0, y:24 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.65 }}
+          className="mb-12"
+        >
+          <p className="label mb-3">// 03. Case Studies</p>
+          <div className="section-divider"/>
+          <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-bold text-ink leading-tight mt-4">
+            Real Problems.{' '}
+            <span className="gradient-text">Engineered Solutions.</span>
           </h2>
-          <p className="font-body text-ice-dim mt-4 max-w-xl">
-            No live links — these projects are internal or client-confidential. Here's the architecture, the problem, and how I solved it.
+          <p className="text-ink-muted mt-3 max-w-xl">
+            These are internal / client-confidential projects. No live links — but here's the full architecture, problem, and solution.
           </p>
         </motion.div>
-
         <Project1/>
         <Project2/>
       </div>
