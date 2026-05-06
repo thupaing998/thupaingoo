@@ -58,7 +58,7 @@ export default function About() {
                 className="absolute -left-5 bottom-16 bg-white rounded-xl p-3 shadow-card border border-surface-border"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white text-sm font-bold">5</div>
+                  <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white text-sm font-bold">2</div>
                   <div>
                     <p className="text-[10px] font-mono font-bold text-ink-soft">Years Exp.</p>
                     <p className="text-[9px] text-ink-subtle">Full-Stack Dev</p>
@@ -115,7 +115,7 @@ export default function About() {
               <a href="mailto:thup2081@gmail.com" className="btn-primary">
                 Send Email
               </a>
-              <a href="https://t.me/thupaingoo" target="_blank" rel="noreferrer" className="btn-outline">
+              <a href="https://t.me/Recapadmin" target="_blank" rel="noreferrer" className="btn-outline">
                 Telegram
               </a>
               <a href="tel:+959982335714" className="contact-chip">

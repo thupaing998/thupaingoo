@@ -79,7 +79,7 @@ export default function Navbar() {
               </svg>
               thup2081@gmail.com
             </a>
-            <a href="https://t.me/thupaingoo" target="_blank" rel="noreferrer" className="contact-chip text-xs">
+            <a href="https://t.me/Recapadmin" target="_blank" rel="noreferrer" className="contact-chip text-xs">
               <svg className="w-3.5 h-3.5 text-sky-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
               </svg>
@@ -128,7 +128,7 @@ export default function Navbar() {
                 <div className="h-px bg-surface-border my-2"/>
                 <a href="mailto:thup2081@gmail.com" className="px-4 py-2 text-sm text-brand-600 font-medium">✉ thup2081@gmail.com</a>
                 <a href="tel:+959982335714"          className="px-4 py-2 text-sm text-ink-muted font-medium">☎ +959 982 335 714</a>
-                <a href="https://t.me/thupaingoo"    className="px-4 py-2 text-sm text-ink-muted font-medium" target="_blank" rel="noreferrer">✈ Telegram</a>
+                <a href="https://t.me/Recapadmin"    className="px-4 py-2 text-sm text-ink-muted font-medium" target="_blank" rel="noreferrer">✈ Telegram</a>
                 <a href="mailto:thup2081@gmail.com"  className="btn-primary mt-2 justify-center">Hire Me →</a>
               </div>
             </motion.div>

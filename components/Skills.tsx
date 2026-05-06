@@ -4,23 +4,30 @@ import { motion, useInView } from 'framer-motion'
 import {
   PythonIcon, ReactIcon, DockerIcon, LinuxIcon, PHPIcon,
   NextJSIcon, APIIcon, BotIcon, TelegramIcon, FFmpegIcon,
-  RedisIcon, PostgreSQLIcon, NginxIcon, ShieldIcon, CloudVPSIcon
+  RedisIcon, PostgreSQLIcon, NginxIcon, ShieldIcon, CloudVPSIcon,
+  TypeScriptIcon, BashIcon, SQLIcon, TailwindIcon, FramerIcon, ReduxIcon,
 } from './Icons'
 
 const groups = [
   {
     label:'Languages', color:'#3B82F6', bg:'#EFF6FF', border:'#BFDBFE',
     skills:[
-      { name:'Python',     icon:PythonIcon,  level:95 },
-      { name:'PHP',        icon:PHPIcon,     level:80 },
-      { name:'JavaScript', icon:NextJSIcon,  level:88 },
+      { name:'Python',     icon:PythonIcon,     level:95 },
+      { name:'PHP',        icon:PHPIcon,        level:80 },
+      { name:'JavaScript', icon:NextJSIcon,     level:88 },
+      { name:'TypeScript', icon:TypeScriptIcon, level:82 },
+      { name:'Bash / Shell', icon:BashIcon,     level:85 },
+      { name:'SQL',        icon:SQLIcon,        level:80 },
     ],
   },
   {
     label:'Frontend', color:'#7C3AED', bg:'#F5F3FF', border:'#DDD6FE',
     skills:[
-      { name:'React',   icon:ReactIcon,  level:90 },
-      { name:'Next.js', icon:NextJSIcon, level:85 },
+      { name:'React',          icon:ReactIcon,  level:90 },
+      { name:'Next.js',        icon:NextJSIcon, level:85 },
+      { name:'Tailwind CSS',   icon:TailwindIcon, level:92 },
+      { name:'Framer Motion',  icon:FramerIcon,   level:82 },
+      { name:'Redux / Zustand',icon:ReduxIcon,    level:78 },
     ],
   },
   {
@@ -47,10 +54,11 @@ const groups = [
 ]
 
 const techPills = [
-  'Python','FastAPI','React','Next.js','Docker','Linux VPS','PostgreSQL',
-  'Redis','Nginx','Telegram Bot API','FFmpeg','PHP Laravel','REST APIs',
-  'WebSockets','JWT / HMAC','CI/CD','Cloudflare','Shell Scripting','Aiogram',
-  'Pyrogram','SQLAlchemy','Prisma','Framer Motion','Three.js',
+  'Python','TypeScript','PHP','Bash / Shell','SQL','FastAPI',
+  'React','Next.js','Tailwind CSS','Framer Motion','Redux','Zustand',
+  'Docker','Linux VPS','PostgreSQL','Redis','Nginx','Telegram Bot API',
+  'FFmpeg','REST APIs','WebSockets','JWT / HMAC','CI/CD','Cloudflare',
+  'Aiogram','Pyrogram','SQLAlchemy','Prisma','Three.js',
 ]
 
 function SkillCard({ skill, color, delay }:{ skill:any; color:string; delay:number }) {

@@ -371,3 +371,115 @@ export const CircuitDot = ({ size = 8, color = "#00E5FF" }: { size?: number; col
     <circle cx={(size+4)/2-1} cy={(size+4)/2-1} r={size/4} fill="white" opacity="0.4" />
   </svg>
 )
+
+export const TypeScriptIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="ts-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#3178C6" />
+        <stop offset="1" stopColor="#235A97" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="32" height="32" rx="6" fill="url(#ts-g)" />
+    {/* TS text */}
+    <text x="7" y="26" fontFamily="monospace" fontWeight="bold" fontSize="14" fill="white">TS</text>
+    {/* Underline accent */}
+    <rect x="7" y="28" width="26" height="2" rx="1" fill="white" opacity="0.3" />
+  </svg>
+)
+
+export const BashIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bash-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#1E293B" />
+        <stop offset="1" stopColor="#334155" />
+      </linearGradient>
+    </defs>
+    {/* Terminal frame */}
+    <rect x="3" y="5" width="34" height="30" rx="5" fill="url(#bash-g)" />
+    {/* Top bar */}
+    <rect x="3" y="5" width="34" height="8" rx="5" fill="#0F172A" />
+    {/* Window dots */}
+    <circle cx="10" cy="9" r="1.5" fill="#EF4444" opacity="0.9" />
+    <circle cx="16" cy="9" r="1.5" fill="#F59E0B" opacity="0.9" />
+    <circle cx="22" cy="9" r="1.5" fill="#22C55E" opacity="0.9" />
+    {/* Prompt */}
+    <text x="8" y="23" fontFamily="monospace" fontSize="7" fill="#22C55E" opacity="0.9">$_</text>
+    {/* Cursor blink bar */}
+    <rect x="8" y="26" width="6" height="2" rx="1" fill="#22C55E" opacity="0.6" />
+    <rect x="16" y="26" width="14" height="2" rx="1" fill="#64748B" opacity="0.5" />
+  </svg>
+)
+
+export const SQLIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sql-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#6366F1" />
+        <stop offset="1" stopColor="#4F46E5" />
+      </linearGradient>
+    </defs>
+    {/* DB cylinder top */}
+    <ellipse cx="20" cy="10" rx="14" ry="5" fill="url(#sql-g)" opacity="0.9" />
+    {/* DB cylinder body */}
+    <rect x="6" y="10" width="28" height="20" fill="url(#sql-g)" opacity="0.6" />
+    {/* DB cylinder bottom */}
+    <ellipse cx="20" cy="30" rx="14" ry="5" fill="url(#sql-g)" opacity="0.9" />
+    {/* Middle line */}
+    <ellipse cx="20" cy="20" rx="14" ry="4" fill="none" stroke="white" strokeWidth="0.8" opacity="0.3" />
+    {/* SQL label */}
+    <text x="50%" y="22" dominantBaseline="middle" textAnchor="middle"
+      fontFamily="monospace" fontWeight="bold" fontSize="8" fill="white" opacity="0.9">SQL</text>
+  </svg>
+)
+
+export const TailwindIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tw-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#06B6D4" />
+        <stop offset="1" stopColor="#0EA5E9" />
+      </linearGradient>
+    </defs>
+    {/* Tailwind wave mark — two wave shapes */}
+    <path d="M20 9C16 9 13.5 11 12 15C14 12 16.5 11 19 12C20.4 12.4 21.4 13.4 22.5 14.5C24.2 16.2 26.2 18 30 18C34 18 36.5 16 38 12C36 15 33.5 16 31 15C29.6 14.6 28.6 13.6 27.5 12.5C25.8 10.8 23.8 9 20 9Z" fill="url(#tw-g)" />
+    <path d="M12 21C8 21 5.5 23 4 27C6 24 8.5 23 11 24C12.4 24.4 13.4 25.4 14.5 26.5C16.2 28.2 18.2 30 22 30C26 30 28.5 28 30 24C28 27 25.5 28 23 27C21.6 26.6 20.6 25.6 19.5 24.5C17.8 22.8 15.8 21 12 21Z" fill="url(#tw-g)" opacity="0.75" />
+  </svg>
+)
+
+export const FramerIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="framer-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#8B5CF6" />
+        <stop offset="1" stopColor="#6D28D9" />
+      </linearGradient>
+    </defs>
+    {/* Framer F shape */}
+    <path d="M10 6 H30 L20 18 H30 L10 34 V22 H20 L10 10 Z" fill="url(#framer-g)" />
+  </svg>
+)
+
+export const ReduxIcon = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="redux-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#764ABC" />
+        <stop offset="1" stopColor="#593296" />
+      </linearGradient>
+    </defs>
+    {/* Redux circular arrow symbol */}
+    <path d="M26 8C30 10 33 14.5 33 20C33 23 32 25.7 30.3 27.8" stroke="url(#redux-g)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    <path d="M14 8C10 10 7 14.5 7 20C7 23 8 25.7 9.7 27.8" stroke="url(#redux-g)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    <path d="M20 32C22.5 32 24.8 31.3 26.7 30" stroke="url(#redux-g)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    {/* Arrow heads */}
+    <path d="M29 25 L30.3 27.8 L27.5 28.2" stroke="url(#redux-g)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M11 25 L9.7 27.8 L12.5 28.2" stroke="url(#redux-g)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Center dot */}
+    <circle cx="20" cy="20" r="3.5" fill="url(#redux-g)" />
+    {/* Label */}
+    <text x="50%" y="38" dominantBaseline="middle" textAnchor="middle"
+      fontFamily="monospace" fontSize="6" fill="url(#redux-g)" opacity="0.7">ZUSTAND</text>
+  </svg>
+)
