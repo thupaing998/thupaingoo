@@ -307,3 +307,27 @@ body {
 @keyframes marquee     { 0% { transform:translateX(0) } 100% { transform:translateX(-50%) } }
 @keyframes slideInLeft { from { opacity:0; transform:translateX(-32px) } to { opacity:1; transform:translateX(0) } }
 @keyframes slideInRight{ from { opacity:0; transform:translateX(32px)  } to { opacity:1; transform:translateX(0) } }
+
+/* ── Advanced 3D Utility Classes ── */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Enhancing default transitions for smoother experience */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #3B82F6;
+  color: white;
+}
