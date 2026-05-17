@@ -189,7 +189,7 @@ export default function About() {
               </motion.a>
               <motion.a 
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                href="https://t.me/Recapadmin" target="_blank" rel="noreferrer" 
+                href="https://t.me/janus_here" target="_blank" rel="noreferrer" 
                 className="btn-outline py-3 px-6 text-base"
               >
                 Telegram
