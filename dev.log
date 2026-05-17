@@ -1,0 +1,16 @@
+
+> thu-paing-portfolio@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 1699ms
+ ○ Compiling / ...
+ ✓ Compiled / in 10.1s (1217 modules)
+ GET / 200 in 11518ms
+ ✓ Compiled in 1367ms (616 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 9.1s (1206 modules)
+ GET /grid.svg 404 in 9214ms
