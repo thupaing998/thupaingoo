@@ -72,7 +72,7 @@ export default function Footer() {
               <motion.a 
                 whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
                 whileTap={{ scale: 0.95 }}
-                href="https://t.me/Recapadmin" target="_blank" rel="noreferrer"
+                href="https://t.me/janus_here" target="_blank" rel="noreferrer"
                 className="inline-flex items-center gap-3 bg-surface-border/30 hover:bg-surface-border/50 text-white font-semibold px-8 py-4 rounded-xl transition-all border border-white/10 group backdrop-blur-sm"
               >
                 <svg className="w-5 h-5 text-sky-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
