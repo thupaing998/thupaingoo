@@ -1,6 +1,6 @@
 'use client'
-import { useRef } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { useRef, useCallback } from 'react'
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from 'framer-motion'
 import Image from 'next/image'
 
 const traits = [
@@ -13,7 +13,7 @@ const traits = [
 export default function About() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-10%' })
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -23,6 +23,26 @@ export default function About() {
   const imageY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"])
   const textY = useTransform(scrollYProgress, [0, 1], ["10%", "-5%"])
   const blobRotate = useTransform(scrollYProgress, [0, 1], [0, 45])
+  const blobScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.1, 0.9])
+
+  // Tilt effect on image
+  const tiltX = useMotionValue(0)
+  const tiltY = useMotionValue(0)
+  const springTiltX = useSpring(tiltX, { stiffness: 200, damping: 20 })
+  const springTiltY = useSpring(tiltY, { stiffness: 200, damping: 20 })
+
+  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    tiltX.set(y * -10)
+    tiltY.set(x * 10)
+  }, [tiltX, tiltY])
+
+  const handleImageMouseLeave = useCallback(() => {
+    tiltX.set(0)
+    tiltY.set(0)
+  }, [tiltX, tiltY])
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -38,12 +58,16 @@ export default function About() {
   }
 
   return (
-    <section id="about" ref={ref} className="py-32 sm:py-40 bg-surface-muted/30 relative overflow-hidden">
-      
+    <section id="about" ref={ref} className="py-32 sm:py-40 bg-surface-muted/30 relative overflow-hidden snap-section">
+
       {/* Decorative Background Elements */}
-      <motion.div 
-        style={{ rotate: blobRotate }}
+      <motion.div
+        style={{ rotate: blobRotate, scale: blobScale }}
         className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-brand-100/50 to-transparent rounded-full blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3"
+      />
+      <motion.div
+        style={{ rotate: useTransform(scrollYProgress, [0, 1], [0, -30]) }}
+        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-violet-100/30 to-transparent rounded-full blur-[80px] -z-10 -translate-x-1/4 translate-y-1/4"
       />
 
       <div className="max-w-6xl mx-auto px-5 sm:px-8 relative z-10">
@@ -55,16 +79,19 @@ export default function About() {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 1 }}
-            className="relative flex justify-center lg:justify-start perspective-1000"
+            className="relative flex justify-center lg:justify-start"
           >
-            {/* 3D Magnetic Container */}
-            <motion.div 
-              whileHover={{ scale: 1.02, rotateY: 5, rotateX: -5 }}
+            {/* 3D Tilt Container */}
+            <motion.div
+              style={{ rotateX: springTiltX, rotateY: springTiltY }}
+              onMouseMove={handleImageMouseMove}
+              onMouseLeave={handleImageMouseLeave}
+              whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-80 sm:w-96 aspect-[3/4] preserve-3d"
+              className="relative w-80 sm:w-96 aspect-[3/4] preserve-3d cursor-pointer"
             >
               {/* Image Mask Reveal Sequence */}
-              <motion.div 
+              <motion.div
                 initial={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)" }}
                 animate={inView ? { clipPath: "polygon(0 0%, 100% 0%, 100% 100%, 0% 100%)" } : {}}
                 transition={{ duration: 1.4, ease: [0.77, 0, 0.175, 1], delay: 0.2 }}
@@ -74,15 +101,15 @@ export default function About() {
                 <div className="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
                   <Image src="/about-bg.png" alt="" fill className="object-cover" />
                 </div>
-                
-                <Image 
-                  src="/profile.png" 
-                  alt="Thu Paing Oo" 
+
+                <Image
+                  src="/profile.png"
+                  alt="Thu Paing Oo"
                   fill
                   className="object-cover object-center z-10 scale-105 hover:scale-110 transition-transform duration-700 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                
+
                 {/* Glossy overlay */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 z-20 pointer-events-none" />
               </motion.div>
@@ -95,7 +122,7 @@ export default function About() {
                 className="absolute -right-8 top-12 z-30"
               >
                 <motion.div
-                  animate={{ y: [-8, 8, -8] }} 
+                  animate={{ y: [-8, 8, -8] }}
                   transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
                   className="bg-white/90 backdrop-blur-md rounded-2xl px-4 py-3 shadow-xl border border-white"
                 >
@@ -111,7 +138,7 @@ export default function About() {
                 className="absolute -left-8 bottom-20 z-30"
               >
                 <motion.div
-                  animate={{ y: [8, -8, 8] }} 
+                  animate={{ y: [8, -8, 8] }}
                   transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 1 }}
                   className="bg-ink rounded-2xl p-4 shadow-xl border border-ink-soft flex items-center gap-3"
                 >
@@ -124,14 +151,21 @@ export default function About() {
                   </div>
                 </motion.div>
               </motion.div>
+
+              {/* Animated border glow */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-3 rounded-[32px] border border-dashed border-brand-200/20 -z-10"
+              />
             </motion.div>
           </motion.div>
 
           {/* ── Right: Text ── */}
-          <motion.div 
+          <motion.div
             style={{ y: textY }}
-            variants={staggerContainer} 
-            initial="hidden" 
+            variants={staggerContainer}
+            initial="hidden"
             animate={inView ? 'show' : {}}
           >
             <motion.div variants={fadeUp}>
@@ -143,7 +177,7 @@ export default function About() {
 
             <motion.h2 variants={fadeUp} className="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-bold text-ink leading-[1.1] mb-6">
               I Don't Just Write Code.<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-violet-600">I Build Machines.</span>
+              <span className="text-gradient-animated">I Build Machines.</span>
             </motion.h2>
 
             <motion.div variants={fadeUp} className="space-y-6 text-ink-muted text-lg leading-relaxed mb-10 font-light">
@@ -160,15 +194,23 @@ export default function About() {
 
             {/* Trait cards grid with staggered reveal */}
             <motion.div variants={staggerContainer} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-              {traits.map((t) => (
-                <motion.div 
-                  key={t.label} 
+              {traits.map((t, i) => (
+                <motion.div
+                  key={t.label}
                   variants={fadeUp}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm hover:shadow-xl hover:border-brand-200 transition-all group"
+                  whileHover={{ scale: 1.03, y: -4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm hover:shadow-xl hover:border-brand-200 transition-all group tilt-card touch-feedback touch-ripple cursor-default"
+                  style={{ animationDelay: `${i * 0.1}s` }}
                 >
                   <div className="flex gap-4">
-                    <span className="text-2xl flex-shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform origin-center">{t.icon}</span>
+                    <motion.span
+                      className="text-2xl flex-shrink-0"
+                      whileHover={{ scale: 1.2, rotate: 10 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      {t.icon}
+                    </motion.span>
                     <div>
                       <p className="text-sm font-bold text-ink mb-1 group-hover:text-brand-600 transition-colors">{t.label}</p>
                       <p className="text-xs text-ink-subtle leading-relaxed">{t.desc}</p>
@@ -180,24 +222,25 @@ export default function About() {
 
             {/* Contact Actions */}
             <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-4">
-              <motion.a 
+              <motion.a
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                href="mailto:thup2081@gmail.com" 
-                className="btn-primary py-3 px-6 text-base"
+                href="mailto:thup2081@gmail.com"
+                className="btn-primary py-3 px-6 text-base magnetic-btn touch-feedback touch-ripple"
               >
                 Send Email
               </motion.a>
-              <motion.a 
+              <motion.a
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                href="https://t.me/janus_here" target="_blank" rel="noreferrer" 
-                className="btn-outline py-3 px-6 text-base"
+                href="https://t.me/janus_here" target="_blank" rel="noreferrer"
+                className="btn-outline py-3 px-6 text-base magnetic-btn touch-feedback touch-ripple"
               >
                 Telegram
               </motion.a>
-              <motion.a 
+              <motion.a
                 whileHover={{ scale: 1.05, backgroundColor: "rgba(241, 245, 249, 1)" }}
-                href="tel:+959982335714" 
-                className="contact-chip py-3 px-6 text-base border-transparent shadow-sm bg-white"
+                whileTap={{ scale: 0.95 }}
+                href="tel:+959****5714"
+                className="contact-chip py-3 px-6 text-base border-transparent shadow-sm bg-white touch-feedback"
               >
                 ☎ +959 982 335 714
               </motion.a>

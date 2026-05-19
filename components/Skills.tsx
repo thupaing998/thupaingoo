@@ -69,22 +69,28 @@ function SkillCard({ skill, color, delay }:{ skill:any; color:string; delay:numb
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ type: "spring", stiffness: 200, damping: 20, delay }}
-      whileHover={{ scale: 1.05, y: -5, boxShadow: `0 10px 20px -10px ${color}80` }}
-      className="skill-icon-card group relative overflow-hidden isolate"
+      whileHover={{ scale: 1.08, y: -6, boxShadow: `0 12px 24px -10px ${color}80` }}
+      whileTap={{ scale: 0.95 }}
+      className="skill-icon-card group relative overflow-hidden isolate tilt-card touch-feedback"
       style={{ borderColor: `${color}40` }}
     >
       {/* Dynamic hover background */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 z-[-1] opacity-0 group-hover:opacity-10 transition-opacity duration-300"
         style={{ background: `radial-gradient(circle at center, ${color}, transparent 70%)` }}
       />
-      
-      <Icon size={36} />
+
+      <motion.div
+        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.15 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Icon size={36} />
+      </motion.div>
       <p className="text-xs font-bold text-ink-muted group-hover:text-ink transition-colors leading-tight mt-1">{skill.name}</p>
-      
+
       <div className="progress-bg w-full mt-2 bg-surface-border/50 h-1.5">
-        <motion.div 
-          className="progress-fill h-full rounded-full" 
+        <motion.div
+          className="progress-fill h-full rounded-full"
           style={{ background: `linear-gradient(90deg, ${color}40, ${color})` }}
           initial={{ width: 0 }}
           whileInView={{ width: `${skill.level}%` }}
@@ -92,7 +98,14 @@ function SkillCard({ skill, color, delay }:{ skill:any; color:string; delay:numb
           transition={{ duration: 1.2, delay: delay + 0.3, ease: [0.23, 1, 0.32, 1] }}
         />
       </div>
-      <p className="text-[10px] font-mono font-medium text-ink-faint group-hover:text-ink-subtle transition-colors mt-1">{skill.level}%</p>
+      <motion.p
+        className="text-[10px] font-mono font-medium text-ink-faint group-hover:text-ink-subtle transition-colors mt-1"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: delay + 0.8 }}
+      >
+        {skill.level}%
+      </motion.p>
     </motion.div>
   )
 }
@@ -100,7 +113,7 @@ function SkillCard({ skill, color, delay }:{ skill:any; color:string; delay:numb
 export default function Skills() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-10%' })
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -123,10 +136,10 @@ export default function Skills() {
   }
 
   return (
-    <section id="skills" ref={ref} className="py-32 sm:py-40 bg-surface-soft relative overflow-hidden">
-      
+    <section id="skills" ref={ref} className="py-32 sm:py-40 bg-surface-soft relative overflow-hidden snap-section">
+
       {/* Subtle parallax background grid */}
-      <motion.div 
+      <motion.div
         style={{ y: yBackground, opacity: opacityBackground }}
         className="absolute inset-0 z-0 pointer-events-none"
       >
@@ -148,12 +161,12 @@ export default function Skills() {
             <p className="font-mono text-sm font-bold text-brand-600 uppercase tracking-widest">02. Tech Stack</p>
             <span className="h-px w-8 bg-brand-500" />
           </motion.div>
-          
+
           <motion.h2 variants={fadeUp} className="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-bold text-ink leading-tight mt-4">
             Tools I Wield to <br className="sm:hidden" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-violet-600">Solve Hard Problems</span>
+            <span className="text-gradient-animated">Solve Hard Problems</span>
           </motion.h2>
-          
+
           <motion.p variants={fadeUp} className="text-ink-muted mt-6 max-w-xl mx-auto text-lg font-light">
             Every tool here is battle-tested in production systems. I choose the right technology for the problem, not the hype.
           </motion.p>
@@ -162,28 +175,32 @@ export default function Skills() {
         {/* Groups Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           {groups.map((g, gi) => (
-            <motion.div 
+            <motion.div
               key={g.label}
               initial={{ opacity: 0, y: 50, scale: 0.98 }}
               animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
               transition={{ duration: 0.8, delay: gi * 0.15, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              className="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-surface-border shadow-lg shadow-surface-border/50 relative overflow-hidden group"
+              className="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-surface-border shadow-lg shadow-surface-border/50 relative overflow-hidden group tilt-card"
             >
               {/* Subtle group background glow */}
-              <div 
+              <motion.div
                 className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
                 style={{ backgroundColor: g.color }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
               />
 
               {/* Group header */}
               <div className="flex items-center gap-4 mb-8">
-                <div 
+                <motion.div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"
                   style={{ backgroundColor: `${g.color}15`, color: g.color }}
+                  whileHover={{ rotate: 10, scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 400 }}
                 >
                   <span className="text-xl font-bold">{g.label.charAt(0)}</span>
-                </div>
+                </motion.div>
                 <div>
                   <h3 className="font-display text-xl font-bold text-ink">{g.label}</h3>
                   <span className="text-xs font-mono font-medium text-ink-subtle">{g.skills.length} core tools</span>
@@ -202,8 +219,8 @@ export default function Skills() {
 
         {/* Endless Marquee */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} 
-          animate={inView ? { opacity: 1, y: 0 } : {}} 
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.6 }}
           className="border-t border-surface-border pt-12"
         >
@@ -212,23 +229,24 @@ export default function Skills() {
             <p className="text-center text-xs text-ink-subtle font-mono tracking-widest uppercase">Comprehensive Index</p>
             <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
           </div>
-          
+
           <div className="relative overflow-hidden w-full max-w-[100vw] -mx-5 sm:mx-0 px-5 sm:px-0">
             {/* Gradient masks for smooth fade at edges */}
             <div className="absolute left-0 inset-y-0 w-32 bg-gradient-to-r from-surface-soft to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 inset-y-0 w-32 bg-gradient-to-l from-surface-soft to-transparent z-10 pointer-events-none" />
-            
+
             <div className="flex w-fit">
-              <motion.div 
-                animate={{ x: [0, -1035] }} // Adjust value based on content width to loop seamlessly
+              <motion.div
+                animate={{ x: [0, -1035] }}
                 transition={{ repeat: Infinity, ease: "linear", duration: 30 }}
                 className="flex gap-3 pr-3"
               >
                 {[...techPills, ...techPills, ...techPills].map((t, i) => (
-                  <motion.span 
-                    key={i} 
-                    whileHover={{ scale: 1.05, backgroundColor: '#EFF6FF', color: '#2563EB', borderColor: '#BFDBFE' }}
-                    className="pill flex-shrink-0 text-sm py-2 px-5 bg-white border border-surface-border shadow-sm cursor-default"
+                  <motion.span
+                    key={i}
+                    whileHover={{ scale: 1.08, backgroundColor: '#EFF6FF', color: '#2563EB', borderColor: '#BFDBFE', y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="pill flex-shrink-0 text-sm py-2 px-5 bg-white border border-surface-border shadow-sm cursor-default touch-feedback"
                   >
                     {t}
                   </motion.span>

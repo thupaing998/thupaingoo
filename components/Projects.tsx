@@ -1,6 +1,6 @@
 'use client'
-import { useRef } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { useRef, useState, useCallback } from 'react'
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
 const code = `
@@ -12,18 +12,18 @@ const code = `
     <span class="token-keyword">if</span> req.url.path == <span class="token-string">"/api/v1/score/submit"</span>:
         signature = req.headers.get(<span class="token-string">"X-Signature"</span>)
         nonce = req.headers.get(<span class="token-string">"X-Nonce"</span>)
-        
+
         <span class="token-comment"># 1. Prevent replay attacks using Redis TTL</span>
         <span class="token-keyword">if await</span> is_nonce_used(nonce):
             <span class="token-keyword">raise</span> HTTPException(<span class="token-number">429</span>, <span class="token-string">"Replay attack detected"</span>)
-            
+
         <span class="token-comment"># 2. Verify payload integrity</span>
         body = <span class="token-keyword">await</span> req.body()
         <span class="token-keyword">if not</span> verify_hmac(body, signature, SECRET_KEY):
             <span class="token-keyword">raise</span> HTTPException(<span class="token-number">403</span>, <span class="token-string">"Invalid signature"</span>)
-            
+
         <span class="token-keyword">await</span> mark_nonce_used(nonce)
-        
+
     <span class="token-keyword">return await</span> call_next(req)`
 
 const wfSteps = [
@@ -38,7 +38,7 @@ const wfSteps = [
 function Project1() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-15%' })
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -47,10 +47,10 @@ function Project1() {
   // Advanced Parallax Effects for Phone Mockup
   const phoneY = useTransform(scrollYProgress, [0, 1], ["20%", "-20%"])
   const phoneRotate = useTransform(scrollYProgress, [0, 1], [15, -5])
-  
+
   return (
     <motion.div ref={ref}
-      initial={{ opacity: 0, y: 50 }} 
+      initial={{ opacity: 0, y: 50 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="bg-white rounded-[2rem] border border-surface-border shadow-2xl overflow-hidden mb-16 relative"
@@ -70,15 +70,16 @@ function Project1() {
             </div>
             <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-ink leading-[1.1]">
               Telegram Mini-App &<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-violet-600">Anti-Cheat Engine</span>
+              <span className="text-gradient-animated">Anti-Cheat Engine</span>
             </h3>
           </div>
           <div className="flex flex-wrap gap-2 max-w-sm lg:justify-end">
             {['Python','FastAPI','Telegram API','JWT','PostgreSQL'].map(t => (
-              <motion.span 
+              <motion.span
                 whileHover={{ scale: 1.05, backgroundColor: '#EFF6FF' }}
-                key={t} 
-                className="pill pill-brand cursor-default bg-white border-brand-200"
+                whileTap={{ scale: 0.95 }}
+                key={t}
+                className="pill pill-brand cursor-default bg-white border-brand-200 touch-feedback"
               >
                 {t}
               </motion.span>
@@ -89,12 +90,14 @@ function Project1() {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Visuals & Problem/Solution */}
           <div className="space-y-10 relative">
-            
+
             {/* Phone mockup with 3D Parallax */}
             <div className="flex justify-center xl:justify-start perspective-1000 h-[500px] items-center">
-              <motion.div 
+              <motion.div
                 style={{ y: phoneY, rotateZ: phoneRotate, rotateX: 10, rotateY: -15 }}
-                className="relative w-[220px] rounded-[2.5rem] overflow-hidden border-[6px] border-ink shadow-2xl preserve-3d"
+                whileHover={{ scale: 1.03, rotateY: -10 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="relative w-[220px] rounded-[2.5rem] overflow-hidden border-[6px] border-ink shadow-2xl preserve-3d cursor-pointer touch-feedback"
               >
                 {/* Glossy reflection */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 z-20 pointer-events-none" />
@@ -108,9 +111,10 @@ function Project1() {
 
             {/* Problem / Solution Cards */}
             <div className="space-y-4">
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="rounded-2xl p-6 bg-red-50/50 border border-red-100 shadow-sm backdrop-blur-sm"
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="rounded-2xl p-6 bg-red-50/50 border border-red-100 shadow-sm backdrop-blur-sm tilt-card touch-feedback"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-red-500"/>
@@ -118,9 +122,10 @@ function Project1() {
                 </div>
                 <p className="text-base text-ink-muted leading-relaxed">Players were exploiting API endpoints to forge scores. We faced hundreds of requests per second with faked timestamps and sophisticated replay attacks flooding the leaderboard.</p>
               </motion.div>
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="rounded-2xl p-6 bg-emerald-50/50 border border-emerald-100 shadow-sm backdrop-blur-sm"
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="rounded-2xl p-6 bg-emerald-50/50 border border-emerald-100 shadow-sm backdrop-blur-sm tilt-card touch-feedback"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-emerald-500"/>
@@ -132,7 +137,7 @@ function Project1() {
           </div>
 
           {/* Code block */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -140,8 +145,8 @@ function Project1() {
           >
             {/* Background decorative blob */}
             <div className="absolute -inset-10 bg-gradient-to-tr from-brand-100/40 to-violet-100/40 rounded-full blur-[60px] -z-10" />
-            
-            <motion.div 
+
+            <motion.div
               whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="code-block border border-gray-800 shadow-2xl rounded-2xl overflow-hidden"
@@ -173,7 +178,7 @@ function Project1() {
 function Project2() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-15%' })
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -181,10 +186,10 @@ function Project2() {
 
   // Workflow image scale effect
   const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1.05, 0.95])
-  
+
   return (
     <motion.div ref={ref}
-      initial={{ opacity: 0, y: 50 }} 
+      initial={{ opacity: 0, y: 50 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="bg-white rounded-[2rem] border border-surface-border shadow-2xl overflow-hidden relative"
@@ -200,17 +205,16 @@ function Project2() {
             </div>
             <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-ink leading-[1.1]">
               Media Processing<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-                Automation Pipeline
-              </span>
+              <span className="text-gradient-animated">Automation Pipeline</span>
             </h3>
           </div>
           <div className="flex flex-wrap gap-2 max-w-sm lg:justify-end">
             {['Python','FFmpeg','Aiogram','OpenAI API','Redis'].map(t => (
-              <motion.span 
+              <motion.span
                 whileHover={{ scale: 1.05, backgroundColor: '#FFF7ED' }}
-                key={t} 
-                className="pill cursor-default border-orange-200 text-orange-700 bg-white"
+                whileTap={{ scale: 0.95 }}
+                key={t}
+                className="pill cursor-default border-orange-200 text-orange-700 bg-white touch-feedback"
               >
                 {t}
               </motion.span>
@@ -220,14 +224,14 @@ function Project2() {
 
         {/* Problem / Solution */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-          <motion.div whileHover={{ scale: 1.02 }} className="rounded-2xl p-6 bg-red-50/50 border border-red-100 shadow-sm backdrop-blur-sm">
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} className="rounded-2xl p-6 bg-red-50/50 border border-red-100 shadow-sm backdrop-blur-sm tilt-card touch-feedback">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-red-500"/>
               <p className="font-mono text-xs font-bold text-red-600 tracking-widest uppercase">The Problem</p>
             </div>
             <p className="text-base text-ink-muted leading-relaxed">Content creators were processing dozens of videos daily. Manual subtitle extraction, translation, and re-encoding was taking 4–6 hours of human labor per video.</p>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }} className="rounded-2xl p-6 bg-emerald-50/50 border border-emerald-100 shadow-sm backdrop-blur-sm">
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} className="rounded-2xl p-6 bg-emerald-50/50 border border-emerald-100 shadow-sm backdrop-blur-sm tilt-card touch-feedback">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-500"/>
               <p className="font-mono text-xs font-bold text-emerald-700 tracking-widest uppercase">The Solution</p>
@@ -250,7 +254,7 @@ function Project2() {
             <p className="text-xs text-ink-subtle font-mono tracking-widest uppercase">Step-by-step Execution Engine</p>
             <span className="h-px w-8 bg-surface-border" />
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {wfSteps.map((s, i) => (
               <motion.div key={s.label}
@@ -258,16 +262,17 @@ function Project2() {
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 whileHover={{ y: -8, scale: 1.05, boxShadow: `0 10px 30px -10px ${s.color}60` }}
+                whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="wf-node bg-white shadow-sm border border-surface-border rounded-2xl p-5 flex flex-col items-center text-center relative overflow-hidden group"
+                className="wf-node bg-white shadow-sm border border-surface-border rounded-2xl p-5 flex flex-col items-center text-center relative overflow-hidden group touch-feedback"
               >
                 {/* Hover background effect */}
-                <div 
+                <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300"
                   style={{ backgroundColor: s.color }}
                 />
-                
-                <motion.div 
+
+                <motion.div
                   className="text-3xl mb-3 p-3 rounded-xl"
                   style={{ backgroundColor: `${s.color}15`, color: s.color }}
                   whileHover={{ rotate: [0, -10, 10, -10, 0] }}
@@ -277,7 +282,7 @@ function Project2() {
                 </motion.div>
                 <p className="text-sm font-bold text-ink mb-2 leading-tight" style={{ color: s.color }}>{s.label}</p>
                 <p className="text-[11px] text-ink-subtle leading-relaxed mb-4 flex-grow">{s.desc}</p>
-                <motion.span 
+                <motion.span
                   whileHover={{ scale: 1.1 }}
                   className="inline-block font-mono text-[10px] px-3 py-1 rounded-full font-bold shadow-inner"
                   style={{ backgroundColor: `${s.color}10`, color: s.color, border: `1px solid ${s.color}30` }}
@@ -298,13 +303,13 @@ export default function Projects() {
   const inView = useInView(ref, { once: true, margin: '-10%' })
 
   return (
-    <section id="projects" ref={ref} className="py-32 sm:py-40 bg-surface-soft relative">
+    <section id="projects" ref={ref} className="py-32 sm:py-40 bg-surface-soft relative snap-section">
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02] pointer-events-none mix-blend-multiply" />
-      
+
       <div className="max-w-6xl mx-auto px-5 sm:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }} 
-          animate={inView ? { opacity: 1, y: 0 } : {}} 
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mb-16 sm:mb-24 text-center lg:text-left lg:flex lg:justify-between lg:items-end"
         >
@@ -315,14 +320,14 @@ export default function Projects() {
             </div>
             <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] font-bold text-ink leading-tight">
               Real Problems.<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-violet-600">Engineered Solutions.</span>
+              <span className="text-gradient-animated">Engineered Solutions.</span>
             </h2>
           </div>
           <p className="text-ink-muted mt-6 lg:mt-0 max-w-md mx-auto lg:mx-0 text-lg font-light text-center lg:text-right">
             Internal & client-confidential projects. No live links — but here's the full architecture breakdown.
           </p>
         </motion.div>
-        
+
         <Project1/>
         <Project2/>
       </div>

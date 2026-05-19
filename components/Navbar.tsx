@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
 
 const links = [
   { label: 'About',    href: '#about'    },
@@ -19,24 +19,33 @@ export default function Navbar() {
   const navBackground = useTransform(
     scrollY,
     [0, 50],
-    ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.8)']
+    ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.85)']
   )
   const navBackdropFilter = useTransform(
     scrollY,
     [0, 50],
-    ['blur(0px)', 'blur(12px)']
+    ['blur(0px)', 'blur(16px)']
   )
   const navShadow = useTransform(
     scrollY,
     [0, 50],
-    ['none', '0 4px 30px rgba(0, 0, 0, 0.05)']
+    ['none', '0 4px 30px rgba(0, 0, 0, 0.06)']
   )
+  const navHeight = useTransform(
+    scrollY,
+    [0, 50],
+    ['80px', '64px']
+  )
+
+  // Scroll progress indicator
+  const { scrollYProgress } = useScroll()
+  const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 30)
       const sections = ['about','skills','projects','contact']
-      for (const id of sections.reverse()) {
+      for (const id of [...sections].reverse()) {
         const el = document.getElementById(id)
         if (el && window.scrollY >= el.offsetTop - 120) { setActive(id); break }
       }
@@ -45,8 +54,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Close mobile menu on link click
+  const handleNavClick = useCallback(() => {
+    setMenuOpen(false)
+  }, [])
+
   return (
     <>
+      {/* Scroll progress bar */}
+      <motion.div
+        className="scroll-progress"
+        style={{ scaleX: progressScale }}
+      />
+
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -55,15 +75,16 @@ export default function Navbar() {
           background: navBackground,
           backdropFilter: navBackdropFilter,
           WebkitBackdropFilter: navBackdropFilter,
-          boxShadow: navShadow
+          boxShadow: navShadow,
+          height: navHeight,
         }}
-        className="fixed top-0 inset-x-0 z-50 py-4 transition-[padding] duration-500"
+        className="fixed top-0 inset-x-0 z-50 transition-[padding] duration-500"
       >
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between gap-4 h-full">
 
           {/* Logo */}
           <a href="#" className="flex items-center gap-3 group flex-shrink-0">
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shadow-brand group-hover:shadow-brand-lg transition-all"
@@ -97,15 +118,15 @@ export default function Navbar() {
 
           {/* Desktop contacts */}
           <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
-            <motion.a 
+            <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="mailto:thup2081@gmail.com" 
-              className="btn-primary text-sm py-2.5 px-6 shadow-lg shadow-brand-500/20"
+              href="mailto:thup2081@gmail.com"
+              className="btn-primary text-sm py-2.5 px-6 shadow-lg shadow-brand-500/20 magnetic-btn touch-feedback"
             >
               Hire Me
-              <motion.svg 
-                className="w-4 h-4 ml-2" 
+              <motion.svg
+                className="w-4 h-4 ml-2"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                 initial={{ x: 0 }}
                 whileHover={{ x: 3 }}
@@ -118,21 +139,21 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <div className="flex lg:hidden items-center">
-            <motion.button 
+            <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setMenuOpen(!menuOpen)}
-              className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-full bg-surface-muted hover:bg-surface-border transition-colors relative z-50"
+              className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-full bg-surface-muted hover:bg-surface-border transition-colors relative z-50 touch-feedback"
               aria-label="Menu"
             >
-              <motion.span 
+              <motion.span
                 animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 8 : 0 }}
                 className="block w-5 h-0.5 bg-ink rounded-full"
               />
-              <motion.span 
+              <motion.span
                 animate={{ opacity: menuOpen ? 0 : 1, scaleX: menuOpen ? 0 : 1 }}
                 className="block w-5 h-0.5 bg-ink rounded-full"
               />
-              <motion.span 
+              <motion.span
                 animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -8 : 0 }}
                 className="block w-5 h-0.5 bg-ink rounded-full"
               />
@@ -152,27 +173,28 @@ export default function Navbar() {
             >
               <div className="max-w-6xl mx-auto px-5 py-6 flex flex-col gap-2">
                 {links.map((l, i) => (
-                  <motion.a 
-                    key={l.href} 
-                    href={l.href} 
-                    onClick={() => setMenuOpen(false)}
+                  <motion.a
+                    key={l.href}
+                    href={l.href}
+                    onClick={handleNavClick}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="px-4 py-4 rounded-xl text-base font-medium text-ink hover:text-brand-600 hover:bg-brand-50 transition-colors flex items-center justify-between group"
+                    className="px-4 py-4 rounded-xl text-base font-medium text-ink hover:text-brand-600 hover:bg-brand-50 transition-colors flex items-center justify-between group touch-feedback"
                   >
                     {l.label}
                     <span className="text-brand-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
                   </motion.a>
                 ))}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
                   className="h-px bg-surface-border my-4"
                 />
-                <motion.a 
+                <motion.a
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-                  href="mailto:thup2081@gmail.com" 
-                  className="btn-primary justify-center py-3.5 text-base"
+                  href="mailto:thup2081@gmail.com"
+                  onClick={handleNavClick}
+                  className="btn-primary justify-center py-3.5 text-base touch-feedback"
                 >
                   Hire Me
                 </motion.a>
